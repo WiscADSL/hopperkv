@@ -11,6 +11,7 @@ sudo apt update
 sudo apt install -y libssl-dev libcurl4-openssl-dev iperf clang-format cmake htop zsh clang unzip curl zlib1g-dev python3-dev
 
 # make a temporary directory for download & install
+rm -rf install
 mkdir -p install
 cd install
 
