@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script creates checkpoints for scaling experiments with global pool
-# This script takes 30 minutes to finish
+# This script takes ~30 minutes to finish
 
 set -euxo pipefail
 
