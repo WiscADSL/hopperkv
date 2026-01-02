@@ -18,16 +18,16 @@ All scripts assume running on the server's `hopperkv/`.
 On the server machine, run `prepare_artifact.sh`, which initializes the current server machine and clients machines (via ssh). This should only run once; skip if already done.
 
 ```shell
-bash experiments/prepare_artifact.sh  # this take ~3.5 hours
+bash experiments/prepare_artifact.sh  # this takes ~3.5 hours
 ```
 
 Then run all experiments
 
 ```shell
-bash experiments/run_artifact.sh      # this take ~13 hours
+bash experiments/run_artifact.sh      # this takes ~13 hours
 ```
 
-The experiment dasta are saved in `results/`. The main results are the following figures:
+The experiment data are saved in `results/`. The main results are the following figures:
 - `results/exper_var_ws/fixed_ws=6m/perf_resrc.pdf` (Figure 6a)
 - `results/exper_var_distrib_6m_0.99/ws=12m/perf_resrc.pdf` (Figure 6b)
 - `results/exper_scale/norm_tput_cdf.pdf` (Figure 7a)
@@ -36,11 +36,11 @@ The experiment dasta are saved in `results/`. The main results are the following
 - `results/exper_trace_512m/norm_tput_cdf.pdf` and `results/exper_trace_512m/norm_tput.pdf` (Figure 9a)
 - `results/exper_trace_1g/norm_tput_cdf.pdf` and `results/exper_trace_1g/norm_tput.pdf` (Figure 9b)
 
-Note: the policy "Non-Part" may cause the system converging to a different state, so its curve may not be an exact match to that in the paper.
+*Note: the policy "Non-Part" may cause the system converging to a different state, so its curve may not be an exact match to that in the paper.*
 
 ## Detailed Reproduction Instructions
 
-This section provides detailed, step-by-step instructions for experiments in [**Quick Reproduction**]((#quick-reproduction)); feel free to skip.
+This section provides detailed, step-by-step instructions for experiments in [**Quick Reproduction**](#quick-reproduction); feel free to skip.
 
 ### Set up Environments
 
@@ -58,7 +58,7 @@ bash scripts/init_server.sh
 
 #### Create Checkpoints
 
-Since it takes very long time to warm up Redis, we will pre-create a few Redis checkpoints and load these checkpoints for experiments. The scripts below will create and save these checkpoints in `ckpt/`. The rest of experiments reply on these checkpoints.
+Since it takes very long time to warm up Redis, we will pre-create a few Redis checkpoints and load these checkpoints for experiments. The scripts below will create and save these checkpoints in `ckpt/`. The rest of experiments rely on these checkpoints.
 
 ```shell
 bash experiments/create_ckpt.sh               # general checkpoints

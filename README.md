@@ -6,9 +6,9 @@ HopperKV is a multi-tenant key-value store that extends Redis to cache data from
 
 **Please refer to [`ARTIFACT.md`](./ARTIFACT.md) for instructions to reproduce experiments.**
 
-HopperKV is developed and tested on Ubuntu-22 with Redis 7.2. Note some HopperKV heuristic replies on Redis-reported statics, whose definition may vary in different versions. 
+HopperKV is developed and tested on Ubuntu-22 with Redis 7.2.
 
-HopperKV uses `uv` to manage Python decencies and build related C++ code. All python scripts should be run via `uv run` (most should be run as a module `uv run -m`). Dependency installation and building can be done simply via `bash scripts/init_server.sh`.
+HopperKV uses `uv` to manage Python dependencies and build related C++ code. All python scripts should be run via `uv run` (most should be run as a module `uv run -m`). Dependency installation and building can be done simply via `bash scripts/init_server.sh`.
 
 
 ## Repository Structure
