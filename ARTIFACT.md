@@ -1,10 +1,45 @@
 # HopperKV Artifact
 
-This document describe the procedure to reproduce the experiments. All scripts assume the current working directory the project top-level directory `HopperKV/`.
+This document describe the procedure to reproduce the experiments in FAST'26 paper *Cache-Centric Multi-Resource Allocation for Storage Services*. The original experiments in the paper run on a AWS EC2 cluster with real DynamoDB. This instructions provides to reproduce all experiments on CloudLab with a mocked DynamoDB backend, which enables an easy-to-use development environment without expensive AWS bills.
 
-## Get Started
+## Cluster Setup
 
-HopperKV uses `uv` to manage decencies and build related C++ code. All python scripts should be run via `uv run` (most should be run as a module `uv run -m`). HopperKV is developed and tested on Ubuntu-22 with Redis 7.2. Note our heuristic replies on Redis-reported statics, whose definition may vary in different versions.
+Experiments require one machine for the server and several for the clients. The provided scripts by default assume a cloudlab cluster with 7 machines, where node0 (10.10.1.1) is the server, and the rest (10.10.1.2, ...) are the clients.
+
+Setup requirements:
+
+- All nodes must have `hopperkv` downloaded in the save path.
+- The server node must be able to `ssh` into other clients machines without passwords.
+
+All scripts assume running on the server's `hopperkv/`.
+
+## Quick Reproduction
+
+On the server machine, run `prepare_artifact.sh`, which initializes the current server machine and ssh into other clients machines and do initialization. This should only run once; skip if already done.
+
+```shell
+bash experiments/prepare_artifact.sh  # this take ~3.5 hours
+```
+
+Then run all experiments
+
+```shell
+bash experiments/run_artifact.sh
+```
+
+This will generate the following figures:
+- `results/exper_var_ws/fixed_ws=6m/perf_resrc.pdf` (Figure 6a)
+- `results/exper_var_distrib_6m_0.99/ws=12m/perf_resrc.pdf` (Figure 6b)
+- `results/exper_scale/norm_tput_cdf.pdf` (Figure 7a)
+- `results/exper_scale/norm_tput.pdf` (Figure 7b)
+- `results/exper_dyn/tput_timeline.pdf` (Figure 8)
+- `results/exper_trace_512m/norm_tput_cdf.pdf` and `results/exper_trace_512m/norm_tput.pdf` (Figure 9a)
+- `results/exper_trace_1g/norm_tput_cdf.pdf` and `results/exper_trace_1g/norm_tput.pdf` (Figure 9b)
+
+
+## Detailed Reproduction Instructions
+
+This section provides detailed instructions and explanation for experiments in [**Quick Reproduction**]((#quick-reproduction)); feel free to skip.
 
 ### Set up Environments
 
@@ -16,12 +51,6 @@ To install all dependencies, run `scripts/init_server.sh`:
 
 ```shell
 bash scripts/init_server.sh
-```
-
-For machines used as a benchmark client, it may not has the capacity to build the entire codebase, so we offer another `scripts/init_client.sh` which only installs decencies to run client code.
-
-```shell
-bash scripts/init_client.sh
 ```
 
 #### Create Checkpoints
@@ -86,28 +115,3 @@ bash experiments/run_trace_1g.sh    # with 1GB baseline cache
 ```
 
 This should produce four figures `results/exper_trace_512m/norm_tput_cdf.pdf` and `results/exper_trace_512m/norm_tput.pdf` (Figure 9a) and `results/exper_trace_1g/norm_tput_cdf.pdf` and `results/exper_trace_1g/norm_tput.pdf` (Figure 9b).
-
-
-## Repository Structure
-
-Below is a quick walkthrough of the codebase.
-
-- `hopperkv/`: the core of HopperKV. It consists of a Redis Module (`hopperkv/redis_module`) and an allocator (`hopperkv/alloc`). `hopperkv` itself is a Python module that can be imported.
-
-  - The redis module will be compiled into `libhopper_redis_module.so` and loaded into Redis server processes. These code will not be accessible through Python APIs.
-  - The allocator consists of C++ code and Python code. The C++ code will be compiled into `hare_alloc_engine.cpython-***.so` (`***` depends on the platform) and accessible as a python module via pybind.
-
-- `driver/`: the driver code to launch and orchestrate server and client processes. The major entry point is `run` and `run_mp`.
-
-  - `run` will start an experiment: starting servers and clients, importing allocator, and performing allocation based on the configured policy.
-  - `run_mp` wraps on top of `run` that run for multiple policies.
-
-  `run` and `run_mp` take a long list of arguments and are typically invoked through the shell scripts in `experiments/`.
-
-- `experiments/`: some experiments-specific shell scripts. Usually each script represents one end-to-end experiment with benchmarking, data processing, plotting, etc. They are also good references for designing a new experiment.
-
-- `scripts/`: some general shell scripts (e.g., plotting, building, data processing). They are also typically invoked by the shell scripts in `experiments/`.
-
-- `replay/`: some scripts specific for trace-replay experiments.
-
-- `lib/`: third-party dependencies.
